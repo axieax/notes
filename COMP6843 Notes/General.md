@@ -6,6 +6,10 @@ python3 -u script.py | tee file_name
 
 buggy web app - bwapp
 
+Some fields may not be validated server side - try empty or dummy values
+
+Send data via different HTTP method - CSRF
+
 
 
 
