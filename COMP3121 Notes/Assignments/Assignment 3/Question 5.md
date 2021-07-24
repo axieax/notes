@@ -2,5 +2,7 @@
 
 Andrew Xie, z5317337
 
-q
+**Given a weighted directed graph $G(V,E)$, find a path in $G$ (possible self-intersecting) of length exactly $K$ that has the maximum total weight. The path can visit a vertex multiple times and can traverse an edge also multiple times. It can also start and end at arbitrary vertices or even start and end at the same vertex.**
+
+
 
