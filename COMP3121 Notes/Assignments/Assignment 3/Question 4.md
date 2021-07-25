@@ -6,5 +6,5 @@ Andrew Xie, z5317337
 
 Going backwards, note max and selected activity
 
-
+O(N)
 

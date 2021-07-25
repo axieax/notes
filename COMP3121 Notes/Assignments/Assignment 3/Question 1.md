@@ -23,7 +23,7 @@ To obtain the solution for the problem, we will need to sum up the number of way
 
 Generalising this algorithm to an expression with *n* symbols and *n - 1* operators between them, the number of ways to make the whole expression *true* is given by summing up the number of ways to make each operator *true* for each operator we split by (where everything to the left of the operator becomes a paranthesised LHS, and similarly for the RHS). This can be looked up in the truth table for the operators AND, OR, NAND and NONR. The number of ways to make each LHS and RHS *true* or *false* becomes another recursive subproblem. If this involves finding the number of ways to make a subproblem *false*, we will then have to sum up the number of ways to make each operator *false*, and so on until we reach the base case where there are no operators in the expression. At this stage, we will be evaluating the number of ways to make either symbols *true* or *false*, *true* or *false*. If the symbol is what we want the subexpression (base case) to be, then return 1 since there is only one way to make the symbol evaluate to the expected truth. Otherwise return 0. This recursive algorithm allows us to find the number of ways to put parantheses in the expression such that the whole expression will evaluate to *true*. 
 
-==TIME COMPLEXITY==
+==TIME COMPLEXITY n^3==
 
 <u>Pseudocode:</u>
 
@@ -53,10 +53,5 @@ function solveSide(expression, makeSide, left, right):
 
 solveSide(expression, true, 0, expression.length - 1)
 ```
-
-
-
-
-
 
 

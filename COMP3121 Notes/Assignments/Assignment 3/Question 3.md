@@ -10,3 +10,9 @@ Go backwards - look forwards 3/4 step find max
 
 
 
+O(n)
+
+
+
+
+
