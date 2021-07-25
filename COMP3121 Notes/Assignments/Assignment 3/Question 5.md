@@ -6,3 +6,13 @@ Andrew Xie, z5317337
 
 
 
+Keep updating best to each node
+
+Backtrack
+
+Explore all paths of length exactly K, count total weight in path and update best
+
+BFS?
+
+Traverse backjwards?
+
