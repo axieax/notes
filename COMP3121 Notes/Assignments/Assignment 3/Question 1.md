@@ -2,9 +2,9 @@
 
 Andrew Xie, z5317337
 
-**You are given a boolean expression consisting of a string of the symbols *true*, *false*, separated by operators AND, OR, NAND and NOR but without any parantheses. Count the number of ways one can put parantheses in the expression such that it will evaluate to *true*.**
+**You are given a boolean expression consisting of a string of the symbols *true*, *false*, separated by operators AND, OR, NAND and NOR but without any parentheses. Count the number of ways one can put parentheses in the expression such that it will evaluate to *true*.**
 
-Say we have an expression such as *false* AND *true* OR *true*. There are two ways to put parantheses in the expression, i.e. 
+Say we have an expression such as *false* AND *true* OR *true*. There are two ways to put parentheses in the expression, i.e. 
 
 1. (*false*) AND (*true* OR *true*)
 2. (*false* AND *true*) OR *true*.
@@ -19,11 +19,9 @@ In the second case, we are splitting around the OR operator, which requires at l
 
 In this case, the RHS is *true* so the number of ways to make case two *true* will be the number of ways to make the LHS *true* plus the number of ways to make the LHS *false* (bolded above). Observe that each of these act as subproblems themselves. The LHS (*false* AND *true*) can only be *false* since once again, since splitting around the only AND operator requires both sides to be *true* in order for the subexpression to be *true*. Hence, there is only one way of making case two *true*. 
 
-To obtain the solution for the problem, we will need to sum up the number of ways in each case. Since the first case cannot be evaluated to *true*, there is only one way of putting parantheses in the expression such that it will evaluate to *true*, given by the second case. 
+To obtain the solution for the problem, we will need to sum up the number of ways in each case. Since the first case cannot be evaluated to *true*, there is only one way of putting parentheses in the expression such that it will evaluate to *true*, given by the second case. 
 
-Generalising this algorithm to an expression with *n* symbols and *n - 1* operators between them, the number of ways to make the whole expression *true* is given by summing up the number of ways to make each operator *true* for each operator we split by (where everything to the left of the operator becomes a paranthesised LHS, and similarly for the RHS). This can be looked up in the truth table for the operators AND, OR, NAND and NONR. The number of ways to make each LHS and RHS *true* or *false* becomes another recursive subproblem. If this involves finding the number of ways to make a subproblem *false*, we will then have to sum up the number of ways to make each operator *false*, and so on until we reach the base case where there are no operators in the expression. At this stage, we will be evaluating the number of ways to make either symbols *true* or *false*, *true* or *false*. If the symbol is what we want the subexpression (base case) to be, then return 1 since there is only one way to make the symbol evaluate to the expected truth. Otherwise return 0. This recursive algorithm allows us to find the number of ways to put parantheses in the expression such that the whole expression will evaluate to *true*. 
-
-==TIME COMPLEXITY n^3==
+Generalising this algorithm to an expression with *n* symbols and *n - 1* operators between them, the number of ways to make the whole expression *true* is given by summing up the number of ways to make each operator *true* for each operator we split by (where everything to the left of the operator becomes a parenthesised LHS, and similarly for the RHS). This can be looked up in the truth table for the operators AND, OR, NAND and NONR. The number of ways to make each LHS and RHS *true* or *false* becomes another recursive subproblem. If this involves finding the number of ways to make a subproblem *false*, we will then have to sum up the number of ways to make each operator *false*, and so on until we reach the base case where there are no operators in the expression. At this stage, we will be evaluating the number of ways to make either symbols *true* or *false*, *true* or *false*. If the symbol is what we want the subexpression (base case) to be, then return 1 since there is only one way to make the symbol evaluate to the expected truth. Otherwise return 0. This recursive algorithm allows us to find the number of ways to put parentheses in the expression such that the whole expression will evaluate to *true*. The algorithm has a complexity of $O(n^3)$ since splitting at each of the $n-1$ operators, there are $O(n^2)$ different ways of placing parentheses in both the left and right sides to the operator. 
 
 <u>Pseudocode:</u>
 
@@ -53,5 +51,4 @@ function solveSide(expression, makeSide, left, right):
 
 solveSide(expression, true, 0, expression.length - 1)
 ```
-
 
