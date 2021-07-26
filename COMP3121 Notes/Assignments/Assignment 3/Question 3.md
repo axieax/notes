@@ -13,7 +13,7 @@ After iterating over $k$​ from 4 to $n$​ in linear $O(n)$​​ time​​, 
 ```pseudocode
 Initialise F with the same dimensions as f, and all elements with value -1;
 F[1] = f[1];
-FOR k from 4..n (inclusive), increasing by 1:
+for k from 4..n (inclusive), increasing by 1:
 	best_previous <- max(F[k-3], F[k-4]);
 	if best_previous != -1:
 		F[k] = best_previous + f[k];
