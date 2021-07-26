@@ -69,3 +69,11 @@ while curr != null:
 path.reverse();
 ```
 
+
+
+==REDO: MOVES FROM LOWER TO HIGHER IS 1==
+
+https://edstem.org/courses/5966/discussion/529330
+
+
+
