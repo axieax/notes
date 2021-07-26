@@ -17,7 +17,7 @@ As the base case to this recursive definition, the solution to the subproblems f
 
 
 ```pseudocode
-E <- empty hash map of size 3 * N;
+E <- n hash map of size 3 * N;
 for j from 1 to 3, increasing by 1:
 	E[(1,j)] <- e[(1,j)];
 for i from 2 to n, increasing by 1:
