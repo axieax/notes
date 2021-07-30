@@ -10,9 +10,14 @@ Some fields may not be validated server side - try empty or dummy values
 
 Send data via different HTTP method - CSRF
 
+Try open script tag - break
 
+CSRF - impersonating a client - cookie
 
+SSRF - impersonating a server - accessing internal resources
 
-
-
+- Request header host - 127.0.0.1:PORT
+- Exposed router can be hacked and used to access local resources
+- robots.txt doesn't enforce disallowed access to sites
+- /etc/hosts/ demo - can specify external addresses, vs internal 127.0.0.1
 
