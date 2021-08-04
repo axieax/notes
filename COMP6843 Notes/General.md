@@ -21,3 +21,8 @@ SSRF - impersonating a server - accessing internal resources
 - robots.txt doesn't enforce disallowed access to sites
 - /etc/hosts/ demo - can specify external addresses, vs internal 127.0.0.1
 
+Prevent XSS with intended HTML injection using iframes - sandbox site for XSS
+
+- Sandbox escape to trigger XSS on main site could still be possible tho (advanced)
+- CSP
+
