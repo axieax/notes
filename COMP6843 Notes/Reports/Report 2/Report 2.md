@@ -190,21 +190,58 @@ As previously recommended, the web application should avoid using JSONP so the C
 
 #### Vulnerability Details
 
+Reflected XSS (cross-site scripting) can be found in the last name field when creating a duplicate student. 
+
 #### Proof of Concept / Steps to Reproduce
 
-
+When creating a student entry with the email address of an existing student, a page similar to below will appear, with the format `User {lastName} already exists`. Although the last name field usually gets HTML encoded when rendered on the home or index page, it seems like it is simply reflected in this case, where having a last name of `<b>test</b>` displays the following page. 
 
 ![sturec6](images/sturec6.png)
 
+As a proof of concept, it can be seen that arbitrary code execution can occur by using JSONP to bypass the CSP restriction for external scripts, where the following payload for last name successfully displays the alert.
 
+```html
+<script src=/students.jsonp?callback=alert(1);></script>
+```
+
+![sturec7](images/sturec7.png)
 
 #### Impact
 
+As demonstrated in the proof of concept above, this vulnerability enables XSS. However, the only way to get this code execution would be to try and create a duplicate student with a specific payload for the last name field. Although this is relatively harmless on its own, an attacker may be able to chain this with CSRF (client-side request forgery) to manually submit the same form for another user, causing them to be redirected to the compromised page.
+
 #### Remediation
 
+Similarly to the other sturec.quoccabank.com vulnerabilities, the general recommendation here would be to remove the use of JSONP so the CSP blocks user scripts as expected. Furthermore, the last name field value should also be HTML-encoded as well, before being displayed to the user. 
 
 
 
+### CRITICAL - CTFProxy2 /flag internal access
+**Asset Domain:** ctfproxy2.quoccabank.com
+
+**Severity Classification:** CRITICAL
+
+#### Vulnerability Details
+A vulnerability with the web application firewall (WAF) for updating avatar (/me) allows internal sites such as /flag to be accessed by a malicious user. The WAF does not manage to completely prevent access to internal networks. 
+
+#### Proof of Concept / Steps to Reproduce
+Accessing /robots.txt hints at the existence of the /flag page. However, upon visiting it through ctfproxy2 as an external user, the page seems to return a status 418 code - I am a teapot! It seems like this page should only be accessed through the internal network. A vulnerability with the /me page for updating avatar can be used to access this page's contents. The source code for /me displays its WAF, which checks for blacklisted words, matches the input website domain with regex, before confirming that it does not refer to the IP address of an internal network. However, a vulnerability here exists where the domain captured with regex refers to a public server, but the actual url refers to another website (which links to an internal site). Providing a website in the format `http://PUBLIC_SITE@MALICIOUS_SITE/flag#.png` passes the checks where the url has to start with http(s) and end with .png. Since the @ symbol is not part of the capture group for the domain, the regex captures from http(s):// up to the @ symbol, which is PUBLIC_SITE. In reality, accessing this url will bring you to the malicious site, where the browser interprets PUBLIC_SITE as the username for logging into the MALICIOUS_SITE. This can be seen with the example `http://www.google.com@facebook.com`, which Firefox displays the following warning for:
+
+![flag1](images/flag1.png)
+
+The remaining /flag#.png refers to the flag route, with an anchor to #.png which is ignored if it does not exist. The payload `http://www.google.com@LOCALHOST/flag#.png` bypasses all the WAF checks and causes the Python backend to access 127.0.0.1/flag, dumping its HTML contents into the attacker's avatar. Although lowercase "localhost" is part of the blacklist, its uppercase version LOCALHOST is not. The content for /flag can now by extracted by saving the avatar as a HTML file, allowing an attacker to view the contents of the internal page, as shown below. 
+
+![flag2](images/flag2.png)
+
+Even if LOCALHOST was also blocked by the WAF, the MALICIOUS_SITE can be replaced by any site with an A record pointing to 127.0.0.1. This means that accessing this malicious site actually refers to an internal address, which also manages to bypass all the WAF checks as well.
+
+#### Impact
+
+A vulnerability with the WAF for avatar uploading in /me allows an attacker to access internal sites such as /flag. 
+
+#### Remediation
+
+Capturing the domain of a site with regex may be vulnerable to potential edge cases, allowing attackers past the WAF. It is often recommended to use existing frameworks if they exist. However, a better way to check whether a site refers to an internal network is by pinging the provided user input website first, and checking that it does not refer to an internal network. This prevents edge cases with regex capturing. 
 
 
 
