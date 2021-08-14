@@ -147,7 +147,7 @@ Notes
   - Requirements/ideation
     - Acceptance criteria. What is necessary to solve the problem? (i.e. user can register an account). Digging into details, defining the capabilities that the system must provide to solve a problem/opportunity
   - Design
-    - Requirements -> plan the product. How to best solve the problem, comparing approaches, decide technical approach. Business rules, UI design, decomposition into executable steps, tickets.
+    - Requirements --> plan the product. How to best solve the problem, comparing approaches, decide technical approach. Business rules, UI design, decomposition into executable steps, tickets.
   - Development
     - Sprint execution, code reviews, UI design implemented, API contracts realised
   - Testing

