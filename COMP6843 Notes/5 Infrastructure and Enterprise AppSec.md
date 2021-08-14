@@ -1,5 +1,7 @@
 Exam: Reading Material - extended response style questions, and refer to Agile table
 
+# DevSecOps
+
 - Agile vs Waterfall
 
   - Tighter Agile sprint iterations
@@ -134,4 +136,67 @@ Readings
   - Script that checks for dozens of common best-practices around deploying Docker containers in production
 
 OWASP top ten has example attack scenarios
+
+# Embracing Chaos Guest Lecture
+
+Notes
+
+- SDLC
+  - Planning/discovery
+    - Market research, stakeholder voices, define problem space, competitive analysis, prioritise opportunities
+  - Requirements/ideation
+    - Acceptance criteria. What is necessary to solve the problem? (i.e. user can register an account). Digging into details, defining the capabilities that the system must provide to solve a problem/opportunity
+  - Design
+    - Requirements -> plan the product. How to best solve the problem, comparing approaches, decide technical approach. Business rules, UI design, decomposition into executable steps, tickets.
+  - Development
+    - Sprint execution, code reviews, UI design implemented, API contracts realised
+  - Testing
+    - QA/QE testing
+    - Alpha/Beta customer acceptance testing
+    - A/B rollout testing -> evaluate impact on subset of customers before broad GA
+    - AppSec review
+    - Performance testing
+    - Internal stakeholder demonstrations
+  - Deployment
+    - Release to integration/staging/production. Data migrations. Blue/green deployment of microservices. Monitoring/observability. Rollbacks, reverts, disaster recovery. "Release coordinator". CI/CD. 
+  - Maintenance
+    - Monitoring & alerting. Scaling & capacity planning. Detect fixes. Deprecation/sunset of old systems & features.
+- Culture challenges - teams often incentivised to move fast
+- Most common sources of product defects stem from insufficiently tested logic errors, integration of components (grows combinatorially relative to size of system and size of team) and inconsistent expectations (i.e. input validation inconsistently enforced)
+- Functional vs Security defects
+  - Functional defects naturally improve over time as customers stumble on them (tried, tested). Security defects begin piling up.
+  - Difficult to think about every change systematically since software systems are organic and changing (assumptions about how data is used today are often contradicted tomorrow).
+  - A ommon software security model is "boundary validation" vs "defense in depth"/zero-trust, i.e. "I trust that user input is sanitised so contextual encoding is unncessary" or "I trust that the database is using prepared statements so I don't need to do input validation"
+- DevOps
+  - Elevate the frequency of deploymments while ensuring predictability and efficiency of the app
+  - Systems becoming more sophisticated/complex to debug. Engineers have the most context (no more operations team).
+  - Optimise around "flow" (requirements -> production) to achieve shorter development cycles and reduce blockers, improve meant time to resolution (feedback)
+  - Reduce waste by validating changes with customers faster
+  - Teams own the entire development, deployment and operational support of their changes - software engineers responsible for their software - authors of a change support it in production -> learn and iterate quickly
+  - Breaks down siloed lifecycle
+    - Previous siloed lifecycle:
+      - Customer/product (planning, requirements)
+      - Developers (design, development)
+      - QA/Security (testing)
+      - Operations (deployment, maintenance)
+    - Agile lifecycle:
+      - Customer/product (planning, requirements, design, development)
+      - QA/Security (testing)
+      - Operations (deployment, maintenance)
+    - DevOps + Agile lifecycle:
+      - Customer/product/devops (planning, requirements, design, development, deployment, maintenance)
+      - QA/Security (testing)
+- Security challenges
+  - Pace of change accelerating
+  - More SWE than security engineers, with 65% of them having less than 7 years experience
+  - How to scale?
+- DevSecOps
+  - Facilitate secure software development by making it an intrinsic part of ALL stages of the SDLC, as a shared responsibility
+  - Security engineers partner with teams to help them deliver software securely
+  - **All stages governed by customer/product, DevSecOps engineers, security (all stakeholders)**
+  - Engineers have the most context -> easier to debug complicated systems
+  - Reduce waste by validating changes with security faster
+- AppSec can't just be the responsibility of a centralised team, but should permeate our team culture, how we build software.
+- Understand the business, then balance risk and impact of vulnerabilities - e.g. customers hosting own JavaScript is fine on AWS, but less for Facebook
+- Norms and standardisation (adoption of patterns, building blocks, tried and tested approaches) can make it easier for teams to spot gaps in their own compliance
 
