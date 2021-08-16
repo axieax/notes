@@ -7,7 +7,6 @@
   - Sometimes not clear whether algorithm will enter an infinite loop and fail to terminate
   - Sometimes not clear whether algorithm will not run in exponentially many steps in the size of the input - usually almost as bad as never terminating
   - Sometimes not clear whether algorithm produces a desired solution after it terminates
-- 
 
 ## Thieves loot splitting problem
 
@@ -121,16 +120,6 @@ Proof:
       - Rejected him because she was already with someone whom she prefers, or
       - Dropped him later after a proposal from someone whom she prefers
     - In both cases, she would now be with m' whom she prefers over m. **Contradiction!**
-
-
-
-
-
-
-
-
-
-
 
 
 

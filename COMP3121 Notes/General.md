@@ -16,3 +16,6 @@ Exam:
 - 1 Max-flow
 
 Possible linear programming - need to recognise one and convert one to standard case
+
+ https://lukakerr.github.io/uni/3121-notes
+

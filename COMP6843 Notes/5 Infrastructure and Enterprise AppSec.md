@@ -200,3 +200,16 @@ Notes
 - Understand the business, then balance risk and impact of vulnerabilities - e.g. customers hosting own JavaScript is fine on AWS, but less for Facebook
 - Norms and standardisation (adoption of patterns, building blocks, tried and tested approaches) can make it easier for teams to spot gaps in their own compliance
 
+# Revision
+
+DevSecOps - short for development, security and operations - automates the integration of security at every phase of the SDLC, from initial design through integration, testing, deployment and software delivery
+
+- Role of security in agile?
+  - https://www.umsl.edu/~sauterv/analysis/F2015/Integrating%20Security%20into%20Agile%20methodologies.html.htm
+- Static AST, dynamic AST, instrumented AST
+- Source code review
+  - Sources, sinks, taint and taint tracking
+  - Tools: commercial, grep
+
+
+
