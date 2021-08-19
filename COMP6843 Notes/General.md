@@ -26,3 +26,9 @@ Prevent XSS with intended HTML injection using iframes - sandbox site for XSS
 - Sandbox escape to trigger XSS on main site could still be possible tho (advanced)
 - CSP
 
+==CHECK COOKIES==
+
+==CHECK DIFFERENT METHOD==
+
+==If DOM already rendered, further inject `<img src=x onerror=alert(1)>` instead of `<script>alert(1)</script>`==
+

@@ -12,3 +12,6 @@ R Studio exp distribution mean is $1 / \beta$, but course uses $\beta$
 Exam
 
 Convergence of random variables - Slide 279 Week 5 examinable
+
+Delta method
+
